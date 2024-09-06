@@ -71,9 +71,14 @@ O banco de dados inclui as seguintes tabelas:
 
 Contribuições são bem-vindas! Sinta-se à vontade para abrir issues ou enviar pull requests.
 
-## Contato
+## Participantes
 
 - **Nome**: Guilherme Ribeiro de Macedo
-- **Email**: 170162354@aluno.unb.br
-- **Universidade**: Universidade de Brasília (UnB)
+- **Matrícula**: 170162354
+
+- **Nome**: 
+- **Matrícula**: 
+
+- **Nome**: 
+- **Matrícula**: 
 ```
