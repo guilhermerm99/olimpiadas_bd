@@ -43,4 +43,4 @@ def inserir_bandeira(nome_arquivo, nome_pais):
             connection.close()
 
 # Exemplo de uso
-inserir_bandeira(r'C:\Users\guilherme\Documents\olimpiadas_bd\static\img\br.svg', 'Brasil')
+inserir_bandeira(r'C:\Users\guilherme\Documents\olimpiadas_bd\static\img\in.svg', 'Inglaterra')
