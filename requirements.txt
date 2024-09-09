@@ -1,5 +1,3 @@
-Flask
-Flask-SQLAlchemy
-Flask-Migrate
-Flask-Bootstrap
-mysql-connector-python  # Para conexão com MySQL
+sqlalchemy
+mysql-connector-python
+flask

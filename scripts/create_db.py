@@ -28,6 +28,7 @@ def create_database():
             # Comandos SQL para criar tabelas
             create_tables_sql = """
             -- Excluir as tabelas, se existirem
+            SET FOREIGN_KEY_CHECKS = 0;
             DROP TABLE IF EXISTS Atletas_Participantes;
             DROP TABLE IF EXISTS Historico;
             DROP TABLE IF EXISTS Medalha;
@@ -39,6 +40,7 @@ def create_database():
             DROP TABLE IF EXISTS Edicao;
             DROP TABLE IF EXISTS Confederacao;
             DROP TABLE IF EXISTS Pais;
+            SET FOREIGN_KEY_CHECKS = 1;
 
             -- Criação da tabela País
             CREATE TABLE IF NOT EXISTS Pais (
