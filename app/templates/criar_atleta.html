@@ -1,0 +1,24 @@
+<!-- criar_atleta.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Criar Atleta</h2>
+<form method="POST">
+    <label for="nome">Nome:</label>
+    <input type="text" id="nome" name="nome" required><br>
+
+    <label for="genero">Gênero:</label>
+    <input type="text" id="genero" name="genero" required><br>
+
+    <label for="data_nasc">Data de Nascimento:</label>
+    <input type="date" id="data_nasc" name="data_nasc" required><br>
+
+    <label for="id_confederacao">ID da Confederação:</label>
+    <input type="number" id="id_confederacao" name="id_confederacao"><br>
+
+    <label for="id_modalidade">ID da Modalidade:</label>
+    <input type="number" id="id_modalidade" name="id_modalidade"><br>
+
+    <button type="submit">Criar</button>
+</form>
+{% endblock %}

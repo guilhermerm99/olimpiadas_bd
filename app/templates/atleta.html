@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Lista de Atletas</h2>
+    <a href="{{ url_for('criar_atleta') }}" class="btn">Adicionar Novo Atleta</a>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Gênero</th>
+                <th>Data de Nascimento</th>
+                <th>Confederação</th>
+                <th>Modalidade</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for atleta in atletas %}
+            <tr>
+                <td>{{ atleta.id_atleta }}</td>
+                <td>{{ atleta.nome }}</td>
+                <td>{{ atleta.genero }}</td>
+                <td>{{ atleta.data_nasc }}</td>
+                <td>{{ atleta.id_confederacao }}</td>
+                <td>{{ atleta.id_modalidade }}</td>
+                <td>
+                    <a href="{{ url_for('editar_atleta', id=atleta.id_atleta) }}">Editar</a>
+                    <a href="{{ url_for('deletar_atleta', id=atleta.id_atleta) }}" onclick="return confirm('Tem certeza que deseja deletar?')">Deletar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
