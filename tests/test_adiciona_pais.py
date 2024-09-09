@@ -15,7 +15,7 @@ def test_pais_insercao():
     session = SessionLocal()
     try:
         # Lê o arquivo da bandeira como binário
-        with open(r'C:\Users\guilherme\Documents\olimpiadas_bd\static\img\br.svg', "rb") as f:
+        with open(r'C:\Users\guilherme\Documents\olimpiadas_bd\static\bandeiras\br.svg', "rb") as f:
             bandeira_bin = f.read()
         
         novo_pais = Pais(nome="Brasil", sigla="BR", bandeira=bandeira_bin)
