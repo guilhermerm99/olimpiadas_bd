@@ -1,27 +1,31 @@
 from app import db
 
-# Modelo Atleta
+class Pais(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    nome = db.Column(db.String(100), nullable=False)
+    atletas = db.relationship('Atleta', backref='pais', lazy=True)
+
+class Confederacao(db.Model):
+    __tablename__ = 'Confederacao'
+    id = db.Column(db.Integer, primary_key=True)
+    nome = db.Column(db.String(50), nullable=False)
+
 class Atleta(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    nome = db.Column(db.String(100), nullable=False)
-    genero = db.Column(db.String(10), nullable=False)
+    __tablename__ = 'Atleta'
+    
+    id_atleta = db.Column(db.Integer, primary_key=True)
+    genero = db.Column(db.Enum('M', 'F'), nullable=False)
     data_nasc = db.Column(db.Date, nullable=False)
-    id_confederacao = db.Column(db.Integer, nullable=True)
-    id_modalidade = db.Column(db.Integer, nullable=True)
-
-# Modelo Evento
-class Evento(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(100), nullable=False)
-    data = db.Column(db.Date, nullable=False)
-    local = db.Column(db.String(100), nullable=False)
+    id_confederacao = db.Column(db.Integer, db.ForeignKey('Confederacao.id'))
+    id_modalidade = db.Column(db.Integer, db.ForeignKey('Modalidade.id_modalidade'))
+    
+    confederacao = db.relationship('Confederacao', back_populates='atletas')
+    modalidade = db.relationship('Modalidade', back_populates='atletas')
 
-# Modelo Medalha
-class Medalha(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    tipo = db.Column(db.String(50), nullable=False)
-    atleta_id = db.Column(db.Integer, db.ForeignKey('atleta.id'), nullable=False)
-    evento_id = db.Column(db.Integer, db.ForeignKey('evento.id'), nullable=False)
+class Modalidade(db.Model):
+    __tablename__ = 'Modalidade'
 
-    atleta = db.relationship('Atleta', backref=db.backref('medalhas', lazy=True))
-    evento = db.relationship('Evento', backref=db.backref('medalhas', lazy=True))
+    id_modalidade = db.Column(db.Integer, primary_key=True)
+    nome = db.Column(db.String(100), nullable=False)
+    atletas = db.relationship('Atleta', back_populates='modalidade')
