@@ -5,3 +5,5 @@ ttkbootstrap
 requests
 pandas
 mysql-connector-python
+Flask-Cors
+npm

@@ -4,6 +4,7 @@ from io import BytesIO  # For handling byte streams
 from sqlalchemy.orm import Session  # SQLAlchemy session management
 from database.database import get_db  # Your database session management
 from models.pais import Pais  # Direct import of the Pais model
+from sqlalchemy.exc import IntegrityError
 
 pais_bp = Blueprint('pais_bp', __name__)
 
@@ -76,13 +77,33 @@ def atualizar_pais(id_pais):
 
 @pais_bp.route('/pais/<int:id_pais>', methods=['DELETE'])
 def deletar_pais(id_pais):
-    db: Session = next(get_db())
-    pais = db.query(Pais).filter_by(id_pais=id_pais).first()
-    if pais:
-        db.delete(pais)
-        db.commit()
-        return jsonify({"message": "País excluído com sucesso."}), 200
-    return jsonify({"message": "País não encontrado."}), 404
+    db: Session = next(get_db())  # Inicia uma sessão do banco de dados
+    try:
+        pais = db.query(Pais).filter_by(id_pais=id_pais).first()  # Busca o país pelo ID
+
+        if pais:
+            db.delete(pais)  # Tenta deletar o registro do país
+            db.commit()  # Comita a transação
+            return jsonify({"message": "País excluído com sucesso."}), 200
+
+        return jsonify({"message": "País não encontrado."}), 404  # Retorna 404 se não encontrado
+
+    except IntegrityError:
+        db.rollback()  # Reverte a transação em caso de erro de integridade
+        return jsonify({
+            "message": (
+                "Erro ao excluir o país: o país está sendo referenciado por "
+                "outras entidades e não pode ser excluído. Verifique as "
+                "referências e tente novamente."
+            )
+        }), 400
+
+    except SQLAlchemyError as e:
+        db.rollback()  # Reverte a transação em caso de erro geral
+        return jsonify({"message": f"Erro ao excluir o país: {str(e)}"}), 500
+
+    finally:
+        db.close()  # Fecha a sessão para liberar os recursos
 
 @pais_bp.route('/pais/<int:id_pais>/bandeira', methods=['GET'])
 def obter_bandeira(id_pais):

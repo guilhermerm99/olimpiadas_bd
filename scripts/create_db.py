@@ -58,12 +58,12 @@ def create_database():
                 FOREIGN KEY (id_pais) REFERENCES Pais(id_pais)
             );
 
-            -- Criação da tabela Edição
+            -- Criação da tabela Edicao
             CREATE TABLE IF NOT EXISTS Edicao (
                 ano YEAR PRIMARY KEY,
                 cidade_sede VARCHAR(100) NOT NULL,
                 id_pais INT,
-                FOREIGN KEY (id_pais) REFERENCES Pais(id_pais)
+                FOREIGN KEY (id_pais) REFERENCES Pais(id_pais) ON DELETE SET NULL
             );
 
             -- Criação da tabela Modalidade
