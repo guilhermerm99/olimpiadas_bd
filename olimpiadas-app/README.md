@@ -1,70 +1,131 @@
-# Getting Started with Create React App
+Aqui está o `README.md` atualizado com as instruções para configurar e rodar o front-end localizado em `olimpiadas-app`:
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+---
 
-## Available Scripts
+# Olimpiadas BD
 
-In the project directory, you can run:
+Este projeto é uma aplicação de gerenciamento de dados de Olimpíadas, incluindo a criação e manipulação de um banco de dados, bem como a execução da aplicação principal (back-end) e do front-end.
 
-### `npm start`
+## Pré-requisitos
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- Python 3.10 ou superior
+- Node.js e npm (para o front-end)
+- Pip (gerenciador de pacotes do Python)
+- Virtualenv (opcional, mas recomendado para criar um ambiente virtual)
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Configuração do Ambiente
 
-### `npm test`
+### Configuração do Back-end
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+1. **Clone o repositório:**
 
-### `npm run build`
+   ```bash
+   git clone https://github.com/seu-usuario/olimpiadas_bd.git
+   cd olimpiadas_bd
+   ```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+2. **Crie um ambiente virtual (opcional, mas recomendado):**
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+   ```bash
+   python -m venv venv
+   ```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+3. **Ative o ambiente virtual:**
 
-### `npm run eject`
+   - No Windows:
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+     ```bash
+     venv\Scripts\activate
+     ```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+   - No Linux/Mac:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+     ```bash
+     source venv/bin/activate
+     ```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+4. **Instale as dependências:**
 
-## Learn More
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Configuração do Banco de Dados
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+1. **Crie o banco de dados:**
 
-### Code Splitting
+   Execute o script `create_db.py` que está na pasta `scripts` para criar o banco de dados:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+   ```bash
+   python scripts/create_db.py
+   ```
 
-### Analyzing the Bundle Size
+2. **Popule o banco de dados com os dados iniciais:**
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+   Execute o script `insert.py` que está na pasta `scripts` para popular o banco de dados:
 
-### Making a Progressive Web App
+   ```bash
+   python scripts/insert.py
+   ```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+### Executando o Back-end
 
-### Advanced Configuration
+1. **Inicie o back-end:**
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+   Execute o arquivo principal `main.py` para rodar a aplicação:
 
-### Deployment
+   ```bash
+   python main.py
+   ```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+### Configuração do Front-end
 
-### `npm run build` fails to minify
+1. **Acesse o diretório do front-end:**
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+   ```bash
+   cd olimpiadas-app
+   ```
+
+2. **Instale as dependências do front-end:**
+
+   ```bash
+   npm install
+   ```
+
+3. **Inicie o front-end:**
+
+   ```bash
+   npm start
+   ```
+
+4. **Acesse a aplicação no navegador:**
+
+   A aplicação estará disponível no endereço:
+
+   ```plaintext
+   http://localhost:3000
+   ```
+
+## Testes
+
+Para rodar os testes do back-end, utilize:
+
+```bash
+python -m unittest discover -s tests
+```
+
+## Estrutura de Diretórios
+
+- **`database/`**: Contém scripts relacionados ao banco de dados.
+- **`models/`**: Define os modelos utilizados na aplicação.
+- **`olimpiadas-app/`**: Diretório principal da aplicação front-end.
+- **`routes/`**: Define as rotas da aplicação back-end.
+- **`scripts/`**: Scripts auxiliares como `create_db.py` e `insert.py`.
+- **`static/`**: Arquivos estáticos (CSS, JS, imagens).
+- **`tests/`**: Testes unitários e de integração.
+- **`venv/`**: Ambiente virtual (não é versionado).
+
+## Problemas Comuns
+
+- **Erro de conexão com o banco de dados:** Verifique se o banco de dados foi criado e populado corretamente.
+- **Dependências faltando:** Confirme se as bibliotecas necessárias foram instaladas corretamente com `pip install -r requirements.txt` e `npm install` para o front-end.
