@@ -7,3 +7,5 @@ Base = declarative_base()
 from .pais import Pais
 from .confederacao import Confederacao
 from .atleta import Atleta
+from .modalidade import Modalidade
+# Importe outros modelos conforme necessário
