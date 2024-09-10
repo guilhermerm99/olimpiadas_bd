@@ -6,9 +6,9 @@ from routes.correlacionar_routes import correlacionar_bp
 import threading
 import ttkbootstrap as ttk
 from tkinter import ttk as tkttk
-from tkinter import messagebox, filedialog
+from tkinter import messagebox, filedialog, Toplevel
 from requests import get, post, put, delete
-from pandas import DataFrame
+from pandas import DataFrame, json_normalize
 from PIL import Image
 from io import BytesIO
 
@@ -53,6 +53,9 @@ class App(ttk.Window):
 
         athlete_button = ttk.Button(self.current_frame, text="Atleta", command=lambda: self.select_table("Atleta"), bootstyle='light')
         athlete_button.pack(pady=5)
+
+        correlation_button = ttk.Button(self.current_frame, text="Relacionamento", command=self.correlacionar, bootstyle='primary')
+        correlation_button.pack(pady=5)
 
         self.adjust_window_size()
 
@@ -126,21 +129,75 @@ class App(ttk.Window):
 
         self.adjust_window_size()
 
-    def create_table(self, df):
-        # Criando a Treeview para exibir os dados
-        self.table_frame = ttk.Frame(self)
-        self.table_frame.pack(fill="both", expand=True, padx=20, pady=20)
-        
-        tree = tkttk.Treeview(self.table_frame, columns=list(df.columns), show='headings')
+    def correlacionar(self):
+        response = get(url='http://127.0.0.1:5000/api/correlacionar').json()
+        self.create_correlation_table(response)
 
+    def create_correlation_table(self, data):
+        # Limpa o frame atual e cria um novo frame para a tabela
+        self.clear_frame()
+        
+        # Cria o novo frame para colocar a Treeview
+        self.current_frame = ttk.Frame(self)
+        self.current_frame.pack(fill="both", expand=True, padx=20, pady=20)
+
+        # Cria a Treeview com as colunas Atleta, Confederação e Sigla do País
+        tree = ttk.Treeview(self.current_frame, columns=["Atleta", "Confederação", "Sigla do País"], show="headings")
+
+        # Configura as colunas
+        tree.heading("Atleta", text="Atleta")
+        tree.heading("Confederação", text="Confederação")
+        tree.heading("Sigla do País", text="Sigla do País")
+
+        # Configura o tamanho das colunas
+        tree.column("Atleta", anchor='center')
+        tree.column("Confederação", anchor='center')
+        tree.column("Sigla do País", anchor='center')
+
+        # Insere os dados na tabela
+        for item in data:
+            tree.insert("", "end", values=(
+                item["atleta"]["nome"],
+                item["confederacao"]["nome"],
+                item["pais"]["sigla"]
+            ))
+
+        # Empacota a tabela para que ela seja exibida
+        tree.pack(fill="both", expand=True)
+
+        back_button = ttk.Button(self.current_frame, text="Voltar", command=self.show_screen1, bootstyle='secondary')
+        back_button.pack(pady=10)
+        # Ajusta o tamanho da janela
+        self.adjust_window_size()
+
+    def create_table(self, df):
+        # Limpa o frame atual e cria um novo frame para a tabela
+        self.clear_frame()
+
+        # Cria o novo frame para colocar a Treeview
+        self.current_frame = ttk.Frame(self)
+        self.current_frame.pack(fill="both", expand=True, padx=20, pady=20)
+
+        # Cria a Treeview com as colunas baseadas no dataframe
+        tree = ttk.Treeview(self.current_frame, columns=list(df.columns), show='headings')
+
+        # Configura as colunas
         for col in df.columns:
-            tree.heading(col, text=col)  
+            tree.heading(col, text=col)
             tree.column(col, anchor='center')
 
+        # Insere os dados na tabela
         for index, row in df.iterrows():
-            tree.insert('', 'end', values=list(row))  
+            tree.insert('', 'end', values=list(row))
 
-        tree.pack(expand=True, fill='both')
+        # Empacota a tabela para que ela seja exibida
+        tree.pack(fill="both", expand=True)
+
+        back_button = ttk.Button(self.current_frame, text="Voltar", command=self.show_screen2, bootstyle='secondary')
+        back_button.pack(pady=10)
+
+        self.adjust_window_size()
+
 
     def build_country_form(self):
         self.nome_label = ttk.Label(self.current_frame, text="Nome do País")
@@ -284,6 +341,10 @@ class App(ttk.Window):
         self.conf_entry = ttk.Entry(self.current_frame)
         self.conf_entry.pack(pady=5)
 
+        self.modalidade_label = ttk.Label(self.current_frame, text="ID Modalidade")
+        self.modalidade_label.pack(pady=5)
+        self.modalidade_entry = ttk.Entry(self.current_frame)
+        self.modalidade_entry.pack(pady=5)
 
     def upload_image(self):
         try:
@@ -451,12 +512,14 @@ class App(ttk.Window):
                 genero = self.genero_entry.get()
                 data_nasc = self.data_nasc_entry.get()
                 id_confederacao = self.conf_entry.get()
+                id_modalidade = self.modalidade_entry.get()
 
                 data = {
                     'nome': nome,
                     'genero': genero,
                     'data_nasc': data_nasc,
-                    'id_confederacao': id_confederacao
+                    'id_confederacao': id_confederacao,
+                    'id_modalidade': id_modalidade
                 }
 
                 response = put(url=f'http://127.0.0.1:5000/api/atleta/{id}', json=data)
