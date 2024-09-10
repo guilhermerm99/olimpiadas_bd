@@ -4,3 +4,4 @@ flask
 ttkbootstrap
 requests
 pandas
+mysql-connector-python

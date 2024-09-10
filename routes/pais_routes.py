@@ -1,9 +1,9 @@
-from flask import Blueprint, request, jsonify
-from PIL import Image
-from io import BytesIO
-from sqlalchemy.orm import Session
-from database.database import get_db
-from models.pais import Pais
+from flask import Blueprint, request, jsonify, send_file  # Flask-related imports
+from PIL import Image  # Importing Image class from PIL
+from io import BytesIO  # For handling byte streams
+from sqlalchemy.orm import Session  # SQLAlchemy session management
+from database.database import get_db  # Your database session management
+from models.pais import Pais  # Direct import of the Pais model
 
 pais_bp = Blueprint('pais_bp', __name__)
 
@@ -22,7 +22,7 @@ def criar_pais():
     if arquivo_bandeira:
         # Abre e processa o arquivo de imagem
         imagem = Image.open(arquivo_bandeira)
-        imagem.thumbnail((800, 800))  # Redimensiona a imagem
+        imagem.thumbnail((400, 400))  # Redimensiona a imagem
         buffer = BytesIO()
         imagem.save(buffer, format="PNG")  # Salva a imagem em formato PNG
         bandeira = buffer.getvalue()  # Obtém o conteúdo da imagem como bytes
@@ -52,17 +52,24 @@ def atualizar_pais(id_pais):
     if not pais:
         return jsonify({"message": "País não encontrado."}), 404
     
-    data = request.json
-    pais.nome = data.get('nome', pais.nome)
-    pais.sigla = data.get('sigla', pais.sigla)
-    
-    arquivo_bandeira = data.get('bandeira')
+    # Dados do formulário
+    nome = request.form.get('nome')
+    sigla = request.form.get('sigla')
+
+    # Arquivo da bandeira
+    arquivo_bandeira = request.files.get('bandeira')
     if arquivo_bandeira:
-        imagem = Image.open(BytesIO(arquivo_bandeira))
-        imagem.thumbnail((800, 800))
+        imagem = Image.open(arquivo_bandeira)
+        imagem.thumbnail((400, 400))
         buffer = BytesIO()
         imagem.save(buffer, format="PNG")
         pais.bandeira = buffer.getvalue()
+    
+    # Atualizando os campos
+    if nome:
+        pais.nome = nome
+    if sigla:
+        pais.sigla = sigla
 
     db.commit()
     return jsonify({"message": "País atualizado com sucesso."}), 200
@@ -82,5 +89,5 @@ def obter_bandeira(id_pais):
     db: Session = next(get_db())
     pais = db.query(Pais).filter_by(id_pais=id_pais).first()
     if pais and pais.bandeira:
-        return send_file(BytesIO(pais.bandeira), mimetype='image/png')  # Ajuste o tipo MIME conforme necessário
+        return send_file(BytesIO(pais.bandeira), mimetype='image/png')  # Adjust the MIME type if needed
     return jsonify({"message": "Bandeira não encontrada."}), 404
