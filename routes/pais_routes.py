@@ -1,9 +1,9 @@
-from flask import Blueprint, request, jsonify
-from PIL import Image
-from io import BytesIO
+from flask import Blueprint, request, jsonify, send_file  # Combine Flask imports
+from io import BytesIO  # Import BytesIO for handling byte streams
 from sqlalchemy.orm import Session
 from database.database import get_db
-from models.pais import Pais
+from models.pais import Pais  # Direct import of Pais model, assuming correct file path
+
 
 pais_bp = Blueprint('pais_bp', __name__)
 
@@ -22,7 +22,7 @@ def criar_pais():
     if arquivo_bandeira:
         # Abre e processa o arquivo de imagem
         imagem = Image.open(arquivo_bandeira)
-        imagem.thumbnail((800, 800))  # Redimensiona a imagem
+        imagem.thumbnail((400, 400))  # Redimensiona a imagem
         buffer = BytesIO()
         imagem.save(buffer, format="PNG")  # Salva a imagem em formato PNG
         bandeira = buffer.getvalue()  # Obtém o conteúdo da imagem como bytes
@@ -82,5 +82,5 @@ def obter_bandeira(id_pais):
     db: Session = next(get_db())
     pais = db.query(Pais).filter_by(id_pais=id_pais).first()
     if pais and pais.bandeira:
-        return send_file(BytesIO(pais.bandeira), mimetype='image/png')  # Ajuste o tipo MIME conforme necessário
+        return send_file(BytesIO(pais.bandeira), mimetype='image/png')  # Adjust the MIME type if needed
     return jsonify({"message": "Bandeira não encontrada."}), 404
