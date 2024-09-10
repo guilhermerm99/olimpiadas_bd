@@ -506,7 +506,7 @@ class App(ttk.Window):
                     "genero": genero,
                     "data_nasc": data_nasc,
                     "id_confederacao": id_confederacao,
-                    "id_modalidadde": id_modalidade
+                    "id_modalidade": id_modalidade
                 }
 
                 response = post(url='http://127.0.0.1:5000/api/atleta', json=data)
