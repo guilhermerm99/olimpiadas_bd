@@ -11,8 +11,10 @@ from requests import get, post, put, delete
 from pandas import DataFrame, json_normalize
 from PIL import Image, ImageTk
 from io import BytesIO
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 # Registrando as rotas
 app.register_blueprint(pais_bp, url_prefix='/api')
