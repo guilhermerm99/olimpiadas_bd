@@ -63,7 +63,7 @@ class App(ttk.Window):
         self.current_frame = ttk.Frame(self)
         self.current_frame.pack(fill="both", expand=True, padx=20, pady=20)
 
-        label = ttk.Label(self.current_frame, text=f"Tabela: {self.selected_table}\nSelecione uma ação", font=('Helvetica', 18))
+        label = ttk.Label(self.current_frame, text=f"Tabela: {self.selected_table}\nSelecione uma ação para a tabela", font=('Helvetica', 18))
         label.pack(pady=10)
 
         read_button = ttk.Button(self.current_frame, text="Listar", command=lambda: self.show_screen3("listar"), bootstyle='light')
@@ -91,13 +91,29 @@ class App(ttk.Window):
         label = ttk.Label(self.current_frame, text=f"Tabela: {self.selected_table}\nAção: {action.capitalize()}", font=('Helvetica', 18))
         label.pack(pady=10)
 
-        if action == "criar" or action == "atualizar":
+        if action == "criar":
             if self.selected_table == "País":
                 self.build_country_form()
             elif self.selected_table == "Confederação":
                 self.build_confederation_form()
             elif self.selected_table == "Atleta":
                 self.build_athlete_form()
+
+        elif action == "atualizar":
+            if self.selected_table == "País":
+                self.update_country()
+            if self.selected_table == "Confederação":
+                self.update_confederation()
+            elif self.selected_table == "Atleta":
+                self.update_athlete()
+
+        elif action == "deletar":
+            if self.selected_table == "País":
+                self.delete_country()
+            elif self.selected_table == "Confederação":
+                self.delete_confederation()
+            elif self.selected_table == "Atleta":
+                self.delete_athlete()
 
         action_button = ttk.Button(self.current_frame, text="Executar", command=lambda: self.perform_action(action), bootstyle='primary')
         action_button.pack(pady=10)
@@ -125,38 +141,72 @@ class App(ttk.Window):
         tree.pack(expand=True, fill='both')
 
     def build_country_form(self):
-        self.nome_label = ttk.Label(self.current_frame, text="ID do País")
+        self.nome_label = ttk.Label(self.current_frame, text="Nome do País")
         self.nome_label.pack(pady=5)
-
         self.nome_entry = ttk.Entry(self.current_frame)
         self.nome_entry.pack(pady=5)
 
         self.sigla_label = ttk.Label(self.current_frame, text="Sigla")
         self.sigla_label.pack(pady=5)
-
         self.sigla_entry = ttk.Entry(self.current_frame)
         self.sigla_entry.pack(pady=5)
 
         self.image_label = ttk.Label(self.current_frame, text="Bandeira")
         self.image_label.pack(pady=5)
-
         self.image_path_entry = ttk.Entry(self.current_frame, state='readonly')
         self.image_path_entry.pack(pady=5)
 
         self.upload_button = ttk.Button(self.current_frame, text="Selecione a Imagem da Bandeira", command=self.upload_image, bootstyle='light')
         self.upload_button.pack(pady=5)
 
+    def delete_country(self):
+        self.id_label = ttk.Label(self.current_frame, text="ID do País")
+        self.id_label.pack(pady=5)
+        self.id_entry = ttk.Entry(self.current_frame)
+        self.id_entry.pack(pady=5)
+
+    def update_country(self):
+        self.id_label = ttk.Label(self.current_frame, text="ID da Confederação")
+        self.id_label.pack(pady=5)
+        self.id_entry = ttk.Entry(self.current_frame)
+        self.id_entry.pack(pady=5)
+
+        self.nome_label = ttk.Label(self.current_frame, text="Nome da Confederação")
+        self.nome_label.pack(pady=5)
+        self.nome_entry = ttk.Entry(self.current_frame)
+        self.nome_entry.pack(pady=5)
+
     def build_confederation_form(self):
         # Campos específicos para a tabela Confederação
         self.nome_label = ttk.Label(self.current_frame, text="Nome da Confederação")
         self.nome_label.pack(pady=5)
-
         self.nome_entry = ttk.Entry(self.current_frame)
         self.nome_entry.pack(pady=5)
 
         self.pais_label = ttk.Label(self.current_frame, text="ID País")
         self.pais_label.pack(pady=5)
+        self.pais_entry = ttk.Entry(self.current_frame)
+        self.pais_entry.pack(pady=5)
 
+    def delete_confederation(self):
+        self.id_label = ttk.Label(self.current_frame, text="ID da Confederação")
+        self.id_label.pack(pady=5)
+        self.id_entry = ttk.Entry(self.current_frame)
+        self.id_entry.pack(pady=5)
+
+    def update_confederation(self):
+        self.id_label = ttk.Label(self.current_frame, text="ID da Confederação")
+        self.id_label.pack(pady=5)
+        self.id_entry = ttk.Entry(self.current_frame)
+        self.id_entry.pack(pady=5)
+
+        self.nome_label = ttk.Label(self.current_frame, text="Nome da Confederação")
+        self.nome_label.pack(pady=5)
+        self.nome_entry = ttk.Entry(self.current_frame)
+        self.nome_entry.pack(pady=5)
+
+        self.pais_label = ttk.Label(self.current_frame, text="ID País")
+        self.pais_label.pack(pady=5)
         self.pais_entry = ttk.Entry(self.current_frame)
         self.pais_entry.pack(pady=5)
 
@@ -164,34 +214,60 @@ class App(ttk.Window):
         # Campos específicos para a tabela Edição
         self.nome_label = ttk.Label(self.current_frame, text="Nome do Atleta")
         self.nome_label.pack(pady=5)
-
         self.nome_entry = ttk.Entry(self.current_frame)
         self.nome_entry.pack(pady=5)
 
         self.genero_label = ttk.Label(self.current_frame, text="Gênero")
         self.genero_label.pack(pady=5)
-
         self.genero_entry = ttk.Entry(self.current_frame)
         self.genero_entry.pack(pady=5)
 
         self.data_nasc_label = ttk.Label(self.current_frame, text="Data de Nascimento")
         self.data_nasc_label.pack(pady=5)
-
         self.data_nasc_entry = ttk.Entry(self.current_frame)
         self.data_nasc_entry.pack(pady=5)
 
         self.conf_label = ttk.Label(self.current_frame, text="ID Confederação")
         self.conf_label.pack(pady=5)
-
         self.conf_entry = ttk.Entry(self.current_frame)
         self.conf_entry.pack(pady=5)
 
         self.modalidade_label = ttk.Label(self.current_frame, text="ID Modalidade")
         self.modalidade_label.pack(pady=5)
-
         self.modalidade_entry = ttk.Entry(self.current_frame)
         self.modalidade_entry.pack(pady=5)
 
+    def delete_athlete(self):
+        self.id_label = ttk.Label(self.current_frame, text="ID do Atleta")
+        self.id_label.pack(pady=5)
+        self.id_entry = ttk.Entry(self.current_frame)
+        self.id_entry.pack(pady=5)
+
+    def update_athlete(self):
+        self.id_label = ttk.Label(self.current_frame, text="ID do Atleta")
+        self.id_label.pack(pady=5)
+        self.id_entry = ttk.Entry(self.current_frame)
+        self.id_entry.pack(pady=5)
+
+        self.nome_label = ttk.Label(self.current_frame, text="Nome do Atleta")
+        self.nome_label.pack(pady=5)
+        self.nome_entry = ttk.Entry(self.current_frame)
+        self.nome_entry.pack(pady=5)
+
+        self.genero_label = ttk.Label(self.current_frame, text="Gênero")
+        self.genero_label.pack(pady=5)
+        self.genero_entry = ttk.Entry(self.current_frame)
+        self.genero_entry.pack(pady=5)
+
+        self.data_nasc_label = ttk.Label(self.current_frame, text="Data de Nascimento")
+        self.data_nasc_label.pack(pady=5)
+        self.data_nasc_entry = ttk.Entry(self.current_frame)
+        self.data_nasc_entry.pack(pady=5)
+
+        self.conf_label = ttk.Label(self.current_frame, text="ID Confederação")
+        self.conf_label.pack(pady=5)
+        self.conf_entry = ttk.Entry(self.current_frame)
+        self.conf_entry.pack(pady=5)
 
     def upload_image(self):
         file_path = filedialog.askopenfilename(
@@ -241,18 +317,137 @@ class App(ttk.Window):
                 else:
                     messagebox.showerror("Erro", "Não foi possível criar o país.")
 
-            elif self.selected_table == "Confederação":
+            if self.selected_table == "Confederação":
                 nome = self.nome_entry.get()
-                continente = self.continente_entry.get()
-                messagebox.showinfo("Inserir", f"Inserindo Confederação: {nome}, Continente: {continente}")
-            elif self.selected_table == "Atleta":
-                ano = self.ano_entry.get()
                 pais = self.pais_entry.get()
-                messagebox.showinfo("Inserir", f"Inserindo Atleta: Ano: {ano}, País: {pais}")
+
+                data = {
+                    "nome": nome,
+                    "id_pais": pais
+                }
+
+                response = post(url='http://127.0.0.1:5000/api/confederacao', json=data)
+                
+                if response.status_code == 201:
+                    messagebox.showinfo("Sucesso", response.json()["message"])
+                else:
+                    messagebox.showerror("Erro", "Não foi possível criar a confederação.")
+
+            if self.selected_table == "Atleta":
+                nome = self.nome_entry.get()
+                genero = self.genero_entry.get()
+                data_nasc = self.data_nasc_entry.get()
+                id_confederacao = self.conf_entry.get()
+                id_modalidade = self.modalidade_entry.get() or None
+
+                data = {
+                    "nome": nome,
+                    "genero": genero,
+                    "data_nasc": data_nasc,
+                    "id_confederacao": id_confederacao,
+                    "id_modalidadde": id_modalidade
+                }
+
+                response = post(url='http://127.0.0.1:5000/api/atleta', json=data)
+                
+                if response.status_code == 201:
+                    messagebox.showinfo("Sucesso", response.json()["message"])
+                else:
+                    messagebox.showerror("Erro", "Não foi possível criar o atleta.")                
+
         elif action == "atualizar":
-            messagebox.showinfo("Alterar", f"Alterando dados na tabela {self.selected_table}")
+            if self.selected_table == "País":
+                id_pais = self.id_pais_entry.get()
+                
+                nome = self.nome_entry.get()
+                sigla = self.sigla_entry.get()
+                bandeira = self.image_path_entry.get()
+                
+                data = {
+                    "nome": nome,
+                    "sigla": sigla,
+                    "bandeira": bandeira
+                }
+                
+                response = put(url=f'http://127.0.0.1:5000/api/pais/{id_pais}', json=data)
+                
+                if response.status_code == 200:
+                    messagebox.showinfo("Sucesso", response.json()["message"])
+                elif response.status_code == 404:
+                    messagebox.showerror("Erro", "País não encontrado.")
+                else:
+                    messagebox.showerror("Erro", "Não foi possível atualizar o país.")
+
+            if self.selected_table == "Confederação":
+                id = self.id_entry.get()
+                nome = self.nome_entry.get()
+                pais = self.pais_entry.get()
+
+                data = {
+                    'nome': nome,
+                    'id_pais': pais
+                }
+
+                response = put(url=f'http://127.0.0.1:5000/api/confederacao/{id}', json=data)
+                
+                if response.status_code == 200:
+                    messagebox.showinfo("Sucesso", response.json()["message"])
+                else:
+                    messagebox.showerror("Erro", "Não foi possível atualizar a confederação.")
+    
+            if self.selected_table == "Atleta":
+                id = self.id_entry.get()
+                nome = self.nome_entry.get()
+                genero = self.genero_entry.get()
+                data_nasc = self.data_nasc_entry.get()
+                id_confederacao = self.conf_entry.get()
+
+                data = {
+                    'nome': nome,
+                    'genero': genero,
+                    'data_nasc': data_nasc,
+                    'id_confederacao': id_confederacao
+                }
+
+                response = put(url=f'http://127.0.0.1:5000/api/atleta/{id}', json=data)
+                
+                if response.status_code == 200:
+                    messagebox.showinfo("Sucesso", response.json()["message"])
+                else:
+                    messagebox.showerror("Erro", "Não foi possível atualizar o atleta.")
+
+
         elif action == "deletar":
-            messagebox.showinfo("Deletar", f"Deletando dados da tabela {self.selected_table}")
+            if self.selected_table == "País":
+                id = self.id_entry.get()
+
+                response = delete(url=f'http://127.0.0.1:5000/api/pais/{id}')
+                
+                if response.status_code == 200:
+                    messagebox.showinfo("Sucesso", response.json()["message"])
+                else:
+                    messagebox.showerror("Erro", "Não foi possível deletar o país.")
+
+
+            if self.selected_table == "Confederação":
+                id = self.id_entry.get()
+
+                response = delete(url=f'http://127.0.0.1:5000/api/confederacao/{id}')
+                
+                if response.status_code == 200:
+                    messagebox.showinfo("Sucesso", response.json()["message"])
+                else:
+                    messagebox.showerror("Erro", "Não foi possível deletar a confederação.")
+
+            if self.selected_table == "Atleta":
+                id = self.id_entry.get()
+
+                response = delete(url=f'http://127.0.0.1:5000/api/atleta/{id}')
+                
+                if response.status_code == 200:
+                    messagebox.showinfo("Sucesso", response.json()["message"])
+                else:
+                    messagebox.showerror("Erro", "Não foi possível deletar o atleta.")
 
     def clear_frame(self):
         if self.current_frame is not None:
