@@ -3,8 +3,9 @@ from sqlalchemy.orm import Session
 from models.pais import Pais
 from models.confederacao import Confederacao
 from models.atleta import Atleta
-from models.modalidade import Modalidade  # Importar Modalidade
+from models.modalidade import Modalidade
 from database.database import get_db
+import base64
 
 correlacionar_bp = Blueprint('correlacionar', __name__)
 
@@ -21,9 +22,15 @@ def listar_correlacionados():
         Modalidade, Atleta.id_modalidade == Modalidade.id_modalidade
     ).all()
 
-    # Formatar o resultado em JSON
     resposta = []
     for atleta, confederacao, pais, modalidade in resultado:
+        # Verificação do tipo de bandeira
+        if isinstance(pais.bandeira, bytes):
+            bandeira_base64 = base64.b64encode(pais.bandeira).decode('utf-8')
+        else:
+            # Se não for bytes, trate como um erro ou converta conforme necessário
+            bandeira_base64 = pais.bandeira  # ou outra lógica de conversão, se aplicável
+
         resposta.append({
             "atleta": {
                 "id": atleta.id_atleta,
@@ -42,7 +49,8 @@ def listar_correlacionados():
             "pais": {
                 "id": pais.id_pais,
                 "nome": pais.nome,
-                "sigla": pais.sigla
+                "sigla": pais.sigla,
+                "bandeira": bandeira_base64 if bandeira_base64 is not None else None
             }
         })
 

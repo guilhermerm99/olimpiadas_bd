@@ -5,6 +5,8 @@ from models.confederacao import Confederacao
 from models.atleta import Atleta
 from models.modalidade import Modalidade
 from database.database import get_db
+import base64
+
 
 atleta_bp = Blueprint('atleta', __name__)
 
@@ -83,6 +85,9 @@ def detalhar_atleta(id_atleta):
 
     atleta, confederacao, pais, modalidade = resultado
 
+    # Converter bandeira de bytes para base64
+    bandeira_base64 = base64.b64encode(pais.bandeira).decode('utf-8') if pais.bandeira else None
+
     # Formatar o resultado em JSON
     resposta = {
         "atleta": {
@@ -102,7 +107,8 @@ def detalhar_atleta(id_atleta):
         "pais": {
             "id": pais.id_pais,
             "nome": pais.nome,
-            "sigla": pais.sigla
+            "sigla": pais.sigla,
+            "bandeira": bandeira_base64
         }
     }
 
