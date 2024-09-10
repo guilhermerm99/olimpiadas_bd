@@ -6,20 +6,20 @@ from database import get_db
 
 pais_bp = Blueprint('pais', __name__)
 
-# Create
+# Create - Criar País
 @pais_bp.route('/pais', methods=['POST'])
 def criar_pais():
     db: Session = next(get_db())
-    data = request.json
-    bandeira = data.get('bandeira')
-    if bandeira:
-        bandeira = bytes(bandeira, 'utf-8')  # Convertendo para bytes se for uma string, ajuste conforme necessário
+    data = request.form
+    arquivo_bandeira = request.files.get('bandeira')
+    bandeira = arquivo_bandeira.read() if arquivo_bandeira else None
+
     novo_pais = Pais(nome=data['nome'], sigla=data['sigla'], bandeira=bandeira)
     db.add(novo_pais)
     db.commit()
     return jsonify({"message": f"País {data['nome']} criado com sucesso."}), 201
 
-# Read
+# Read - Listar Países
 @pais_bp.route('/pais', methods=['GET'])
 def listar_paises():
     db: Session = next(get_db())
@@ -31,7 +31,7 @@ def listar_paises():
         "bandeira_url": f"/api/pais/{p.id_pais}/bandeira"  # URL para obter a bandeira
     } for p in paises]), 200
 
-# Update
+# Update - Atualizar País
 @pais_bp.route('/pais/<int:id_pais>', methods=['PUT'])
 def atualizar_pais(id_pais):
     db: Session = next(get_db())
@@ -47,7 +47,7 @@ def atualizar_pais(id_pais):
         return jsonify({"message": "País atualizado com sucesso."}), 200
     return jsonify({"message": "País não encontrado."}), 404
 
-# Delete
+# Delete - Deletar País
 @pais_bp.route('/pais/<int:id_pais>', methods=['DELETE'])
 def deletar_pais(id_pais):
     db: Session = next(get_db())
@@ -58,14 +58,7 @@ def deletar_pais(id_pais):
         return jsonify({"message": "País excluído com sucesso."}), 200
     return jsonify({"message": "País não encontrado."}), 404
 
-from flask import Blueprint, request, jsonify, send_file
-from sqlalchemy.orm import Session
-from io import BytesIO
-from models.pais import Pais
-from database import get_db
-
-pais_bp = Blueprint('pais', __name__)
-
+# Obter Bandeira
 @pais_bp.route('/pais/<int:id_pais>/bandeira', methods=['GET'])
 def obter_bandeira(id_pais):
     db: Session = next(get_db())
@@ -73,4 +66,3 @@ def obter_bandeira(id_pais):
     if pais and pais.bandeira:
         return send_file(BytesIO(pais.bandeira), mimetype='image/svg+xml')  # Ajuste o tipo MIME conforme necessário
     return jsonify({"message": "Bandeira não encontrada."}), 404
-
