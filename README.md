@@ -1,84 +1,127 @@
-```markdown
-# Projeto Final da Disciplina de Banco de Dados
+# Olimpiadas BD
 
-Este projeto faz parte da disciplina de Banco de Dados e tem como objetivo demonstrar o uso de PostgreSQL para criar e gerenciar um sistema de banco de dados relacional. O projeto inclui a criação de tabelas, inserção de dados e execução de consultas SQL para manipulação de informações.
+Este projeto é uma aplicação de gerenciamento de dados de Olimpíadas, incluindo a criação e manipulação de um banco de dados, bem como a execução da aplicação principal (back-end) e do front-end.
 
-## Estrutura do Projeto
+## Pré-requisitos
 
-- **`main.py`**: Script principal que conecta ao banco de dados, cria as tabelas e insere os registros necessários.
-- **`config.py`**: Arquivo de configuração que contém as variáveis de ambiente, como URL do banco de dados e outras configurações.
-- **`inserts.py`**: Script que contém as instruções SQL para inserir os dados nas tabelas.
-- **`requirements.txt`**: Lista de dependências do projeto necessárias para executar o código Python.
+- Python 3.10 ou superior
+- Node.js e npm (para o front-end)
+- Pip (gerenciador de pacotes do Python)
+- Virtualenv (opcional, mas recomendado para criar um ambiente virtual)
 
-## Tecnologias Utilizadas
+## Configuração do Ambiente
 
-- **PostgreSQL**: Sistema de gerenciamento de banco de dados relacional.
-- **Python**: Linguagem de programação utilizada para conectar e manipular o banco de dados.
-- **psycopg2**: Biblioteca Python para conectar e interagir com o PostgreSQL.
+### Configuração do Back-end
 
-## Configuração e Execução
-
-### Pré-requisitos
-
-- Python 3.x instalado
-- PostgreSQL instalado e configurado
-- Biblioteca `psycopg2` instalada (pode ser instalada via `requirements.txt`)
-
-### Passo a Passo
-
-1. Clone o repositório:
+1. **Clone o repositório:**
 
    ```bash
-   git clone https://github.com/seu-usuario/seu-repositorio.git
-   cd seu-repositorio
+   git clone https://github.com/seu-usuario/olimpiadas_bd.git
+   cd olimpiadas_bd
    ```
 
-2. Instale as dependências:
+2. **Crie um ambiente virtual (opcional, mas recomendado):**
+
+   ```bash
+   python -m venv venv
+   ```
+
+3. **Ative o ambiente virtual:**
+
+   - No Windows:
+
+     ```bash
+     venv\Scripts\activate
+     ```
+
+   - No Linux/Mac:
+
+     ```bash
+     source venv/bin/activate
+     ```
+
+4. **Instale as dependências:**
 
    ```bash
    pip install -r requirements.txt
    ```
 
-3. Configure o banco de dados:
+### Configuração do Banco de Dados
 
-   - Certifique-se de que o PostgreSQL está rodando.
-   - Crie um banco de dados conforme necessário.
+1. **Crie o banco de dados:**
 
-4. Edite o arquivo `config.py` com as suas credenciais e URL do banco de dados.
+   Execute o script `create_db.py` que está na pasta `scripts` para criar o banco de dados:
 
-5. Execute o script principal:
+   ```bash
+   python scripts/create_db.py
+   ```
+
+2. **Popule o banco de dados com os dados iniciais:**
+
+   Execute o script `insert.py` que está na pasta `scripts` para popular o banco de dados:
+
+   ```bash
+   python scripts/insert.py
+   ```
+
+### Executando o Back-end
+
+1. **Inicie o back-end:**
+
+   Execute o arquivo principal `main.py` para rodar a aplicação:
 
    ```bash
    python main.py
    ```
 
-## Estrutura do Banco de Dados
+### Configuração do Front-end
 
-O banco de dados inclui as seguintes tabelas:
+1. **Acesse o diretório do front-end:**
 
-- **`pais`**: Contém os países participantes.
-- **`confederacao`**: Registra as confederações por país.
-- **`edicao`**: Lista as edições dos eventos.
-- **`modalidade`**: Tipos de modalidades esportivas.
-- **`evento`**: Registra os eventos específicos.
-- **`equipe`**: Registra as equipes participantes.
-- **`atleta`**: Lista os atletas.
-- **`medalha`**: Registra as medalhas conquistadas.
-- **`historico`**: Histórico de desempenho dos atletas e equipes.
-- **Outras tabelas**: Tabelas adicionais para gerenciar os eventos e participações.
+   ```bash
+   cd olimpiadas-app
+   ```
 
-## Contribuição
+2. **Instale as dependências do front-end:**
 
-Contribuições são bem-vindas! Sinta-se à vontade para abrir issues ou enviar pull requests.
+   ```bash
+   npm install
+   ```
 
-## Participantes
+3. **Inicie o front-end:**
 
-- **Nome**: Guilherme Ribeiro de Macedo
-- **Matrícula**: 170162354
+   ```bash
+   npm start
+   ```
 
-- **Nome**: 
-- **Matrícula**: 
+4. **Acesse a aplicação no navegador:**
 
-- **Nome**: 
-- **Matrícula**: 
+   A aplicação estará disponível no endereço:
+
+   ```plaintext
+   http://localhost:3000
+   ```
+
+## Testes
+
+Para rodar os testes do back-end, utilize:
+
+```bash
+python -m unittest discover -s tests
 ```
+
+## Estrutura de Diretórios
+
+- **`database/`**: Contém scripts relacionados ao banco de dados.
+- **`models/`**: Define os modelos utilizados na aplicação.
+- **`olimpiadas-app/`**: Diretório principal da aplicação front-end.
+- **`routes/`**: Define as rotas da aplicação back-end.
+- **`scripts/`**: Scripts auxiliares como `create_db.py` e `insert.py`.
+- **`static/`**: Arquivos estáticos (CSS, JS, imagens).
+- **`tests/`**: Testes unitários e de integração.
+- **`venv/`**: Ambiente virtual (não é versionado).
+
+## Problemas Comuns
+
+- **Erro de conexão com o banco de dados:** Verifique se o banco de dados foi criado e populado corretamente.
+- **Dependências faltando:** Confirme se as bibliotecas necessárias foram instaladas corretamente com `pip install -r requirements.txt` e `npm install` para o front-end.
