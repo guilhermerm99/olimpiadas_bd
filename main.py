@@ -6,10 +6,10 @@ from routes.correlacionar_routes import correlacionar_bp
 import threading
 import ttkbootstrap as ttk
 from tkinter import ttk as tkttk
-from tkinter import messagebox, filedialog, Toplevel
+from tkinter import messagebox, filedialog, Toplevel, Label
 from requests import get, post, put, delete
 from pandas import DataFrame, json_normalize
-from PIL import Image
+from PIL import Image, ImageTk
 from io import BytesIO
 
 app = Flask(__name__)
@@ -198,6 +198,41 @@ class App(ttk.Window):
 
         self.adjust_window_size()
 
+    def create_table_with_images(self, df):
+        self.clear_frame()
+
+        # Criando a Treeview para exibir os dados
+        if self.table_frame is not None:
+            self.table_frame.destroy()
+        
+        self.table_frame = ttk.Frame(self)
+        self.table_frame.pack(fill="both", expand=True, padx=20, pady=20)
+        
+        tree = ttk.Treeview(self.table_frame, columns=list(df.columns), show='headings')
+
+        for col in df.columns:
+            tree.heading(col, text=col)
+            tree.column(col, anchor='center')
+
+        # Inserindo os dados na Treeview
+        for index, row in df.iterrows():
+            values = list(row)
+            tree.insert('', 'end', values=values)
+
+        tree.pack(expand=True, fill='both')
+
+        # Adicionando as imagens em Labels abaixo da Treeview
+        for index, row in df.iterrows():
+            image = row['bandeira_image']
+            if image:
+                bandeira_label = Label(self.table_frame, image=image)
+                bandeira_label.image = image  # Necessário para evitar que a imagem seja coletada pelo garbage collector
+                bandeira_label.pack()
+
+        back_button = ttk.Button(self.current_frame, text="Voltar", command=self.show_screen2, bootstyle='secondary')
+        back_button.pack(pady=10)
+
+        self.adjust_window_size()
 
     def build_country_form(self):
         self.nome_label = ttk.Label(self.current_frame, text="Nome do País")
@@ -365,10 +400,37 @@ class App(ttk.Window):
     def perform_action(self, action):
         if action == "listar":
             if self.selected_table == 'País':
-                response = get(url='http://127.0.0.1:5000/api/pais').json()
+                # Faz a requisição para listar os países
+                response = get('http://127.0.0.1:5000/api/pais').json()
                 response_df = DataFrame(response)
-                
-                self.create_table(response_df)
+
+                # Lista para armazenar as imagens das bandeiras
+                self.bandeira_images = []
+
+                # Itera pelas bandeiras para obter as imagens
+                for index, row in response_df.iterrows():
+                    bandeira_url = row['bandeira_url']
+                    if bandeira_url:
+                        bandeira_full_url = f'http://127.0.0.1:5000{bandeira_url}'  # Cria a URL completa
+                        # Faz a requisição para obter a imagem
+                        bandeira_response = get(bandeira_full_url)
+                        if bandeira_response.status_code == 200:
+                            # Carrega a imagem
+                            image_data = Image.open(BytesIO(bandeira_response.content))
+                            # Redimensiona a imagem
+                            image_data = image_data.resize((20, 12), Image.LANCZOS)  # Ajuste o tamanho conforme necessário
+                            # Converte a imagem para o formato compatível com Tkinter
+                            image_tk = ImageTk.PhotoImage(image_data)
+                            # Adiciona a imagem à lista de imagens para manter a referência
+                            self.bandeira_images.append(image_tk)
+                            # Armazena a imagem na nova coluna no DataFrame para exibir na GUI
+                            response_df.at[index, 'bandeira_image'] = image_tk
+                        else:
+                            response_df.at[index, 'bandeira_image'] = None
+                    else:
+                        response_df.at[index, 'bandeira_image'] = None
+
+                self.create_table_with_images(response_df)
 
             elif self.selected_table == 'Confederação':
                 response = get(url=f'http://127.0.0.1:5000/api/confederacao').json()
@@ -463,19 +525,18 @@ class App(ttk.Window):
                 
                 bandeira_path = self.image_path_entry.get()
                 
-                if not bandeira_path:
-                    messagebox.showerror("Erro", "Por favor, selecione uma bandeira.")
-                    return
-                
                 with open(bandeira_path, 'rb') as bandeira_file:
                     data = {
-                        'nome': nome,
-                        'sigla': sigla
+                        'nome': nome if nome else None,
+                        'sigla': sigla if sigla else None
                     }
                     
+                    data = {k: v for k, v in data.items() if v is not None}
+
                     files = {
                         'bandeira': bandeira_file
                     }
+
                     try:
                         response = put(
                             url=f'http://127.0.0.1:5000/api/pais/{id_pais}', 
@@ -512,20 +573,22 @@ class App(ttk.Window):
                 genero = self.genero_entry.get()
                 data_nasc = self.data_nasc_entry.get()
                 id_confederacao = self.conf_entry.get()
-                id_modalidade = self.modalidade_entry.get()
+                id_modalidade = self.modalidade_entry.get() 
 
                 data = {
-                    'nome': nome,
-                    'genero': genero,
-                    'data_nasc': data_nasc,
-                    'id_confederacao': id_confederacao,
-                    'id_modalidade': id_modalidade
+                    'nome': nome if nome else None,
+                    'genero': genero if genero else None,
+                    'data_nasc': data_nasc if data_nasc else None,
+                    'id_confederacao': id_confederacao if id_confederacao else None,
+                    'id_modalidade': id_modalidade if id_modalidade else None
                 }
+
+                data = {k: v for k, v in data.items() if v is not None}
 
                 response = put(url=f'http://127.0.0.1:5000/api/atleta/{id}', json=data)
                 
                 if response.status_code == 200:
-                    messagebox.showinfo("Sucesso", f"Atleta {nome} atualizada com sucesso!")
+                    messagebox.showinfo("Sucesso", f"Atleta {nome} atualizado com sucesso!")
                 else:
                     messagebox.showerror("Erro", "Não foi possível atualizar o atleta.")
 
