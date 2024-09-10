@@ -1,9 +1,9 @@
-from flask import Blueprint, request, jsonify, send_file  # Combine Flask imports
-from io import BytesIO  # Import BytesIO for handling byte streams
-from sqlalchemy.orm import Session
-from database.database import get_db
-from models.pais import Pais  # Direct import of Pais model, assuming correct file path
-
+from flask import Blueprint, request, jsonify, send_file  # Flask-related imports
+from PIL import Image  # Importing Image class from PIL
+from io import BytesIO  # For handling byte streams
+from sqlalchemy.orm import Session  # SQLAlchemy session management
+from database.database import get_db  # Your database session management
+from models.pais import Pais  # Direct import of the Pais model
 
 pais_bp = Blueprint('pais_bp', __name__)
 
