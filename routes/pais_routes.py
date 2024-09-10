@@ -52,17 +52,24 @@ def atualizar_pais(id_pais):
     if not pais:
         return jsonify({"message": "País não encontrado."}), 404
     
-    data = request.json
-    pais.nome = data.get('nome', pais.nome)
-    pais.sigla = data.get('sigla', pais.sigla)
-    
-    arquivo_bandeira = data.get('bandeira')
+    # Dados do formulário
+    nome = request.form.get('nome')
+    sigla = request.form.get('sigla')
+
+    # Arquivo da bandeira
+    arquivo_bandeira = request.files.get('bandeira')
     if arquivo_bandeira:
-        imagem = Image.open(BytesIO(arquivo_bandeira))
-        imagem.thumbnail((800, 800))
+        imagem = Image.open(arquivo_bandeira)
+        imagem.thumbnail((400, 400))
         buffer = BytesIO()
         imagem.save(buffer, format="PNG")
         pais.bandeira = buffer.getvalue()
+    
+    # Atualizando os campos
+    if nome:
+        pais.nome = nome
+    if sigla:
+        pais.sigla = sigla
 
     db.commit()
     return jsonify({"message": "País atualizado com sucesso."}), 200
