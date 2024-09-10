@@ -1,3 +1,6 @@
 sqlalchemy
 mysql-connector-python
 flask
+ttkbootstrap
+requests
+pandas
