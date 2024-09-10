@@ -9,6 +9,8 @@ from tkinter import ttk as tkttk
 from tkinter import messagebox, filedialog
 from requests import get, post, put, delete
 from pandas import DataFrame
+from PIL import Image
+from io import BytesIO
 
 app = Flask(__name__)
 
@@ -166,15 +168,28 @@ class App(ttk.Window):
         self.id_entry.pack(pady=5)
 
     def update_country(self):
-        self.id_label = ttk.Label(self.current_frame, text="ID da Confederação")
+        self.id_label = ttk.Label(self.current_frame, text="ID do País")
         self.id_label.pack(pady=5)
         self.id_entry = ttk.Entry(self.current_frame)
         self.id_entry.pack(pady=5)
 
-        self.nome_label = ttk.Label(self.current_frame, text="Nome da Confederação")
+        self.nome_label = ttk.Label(self.current_frame, text="Nome do País")
         self.nome_label.pack(pady=5)
         self.nome_entry = ttk.Entry(self.current_frame)
         self.nome_entry.pack(pady=5)
+
+        self.sigla_label = ttk.Label(self.current_frame, text="Sigla")
+        self.sigla_label.pack(pady=5)
+        self.sigla_entry = ttk.Entry(self.current_frame)
+        self.sigla_entry.pack(pady=5)
+
+        self.image_label = ttk.Label(self.current_frame, text="Bandeira")
+        self.image_label.pack(pady=5)
+        self.image_path_entry = ttk.Entry(self.current_frame, state='readonly')
+        self.image_path_entry.pack(pady=5)
+
+        self.upload_button = ttk.Button(self.current_frame, text="Selecione a Imagem da Bandeira", command=self.upload_image, bootstyle='light')
+        self.upload_button.pack(pady=5)
 
     def build_confederation_form(self):
         # Campos específicos para a tabela Confederação
@@ -269,29 +284,36 @@ class App(ttk.Window):
         self.conf_entry = ttk.Entry(self.current_frame)
         self.conf_entry.pack(pady=5)
 
-    def upload_image(self):
-        file_path = filedialog.askopenfilename(
-            title="Selecione a Imagem",
-            filetypes=(("Arquivos .avg", "*.avg"), ("Todos os arquivos", "*.*"))
-        )
-        
-        if file_path:
-            self.image_path_entry.config(state='normal')
-            self.image_path_entry.delete(0, 'end')
-            self.image_path_entry.insert(0, file_path)
-            self.image_path_entry.config(state='readonly')
 
+    def upload_image(self):
+        try:
+            file_path = filedialog.askopenfilename(
+                title="Selecione a Imagem da Bandeira",
+                filetypes=[("Arquivos de Imagem", "*.png;*.jpg;*.jpeg"), ("Todos os arquivos", "*.*")]
+            )
+            
+            if file_path:
+                self.image_path_entry.config(state='normal')
+                self.image_path_entry.delete(0, 'end')
+                self.image_path_entry.insert(0, file_path)
+                self.image_path_entry.config(state='readonly') 
+
+        except Exception as e:
+            messagebox.showerror("Erro ao carregar imagem", str(e))
 
     def perform_action(self, action):
         if action == "listar":
             if self.selected_table == 'País':
-                response = get(url=f'http://127.0.0.1:5000/api/pais').json()
+                response = get(url='http://127.0.0.1:5000/api/pais').json()
                 response_df = DataFrame(response)
+                
                 self.create_table(response_df)
+
             elif self.selected_table == 'Confederação':
                 response = get(url=f'http://127.0.0.1:5000/api/confederacao').json()
                 response_df = DataFrame(response)
                 self.create_table(response_df)
+
             elif self.selected_table == 'Atleta':
                 response = get(url=f'http://127.0.0.1:5000/api/atleta').json()
                 response_df = DataFrame(response)
@@ -303,19 +325,35 @@ class App(ttk.Window):
             if self.selected_table == "País":
                 nome = self.nome_entry.get()
                 sigla = self.sigla_entry.get()
-                bandeira = self.image_path_entry.get()
-                data = {
-                    "nome": nome,
-                    "sigla": sigla,
-                    "bandeira": bandeira
-                }
                 
-                response = post(url='http://127.0.0.1:5000/api/pais', json=data)
+                bandeira_path = self.image_path_entry.get()
                 
-                if response.status_code == 201:
-                    messagebox.showinfo("Sucesso", response.json()["message"])
-                else:
-                    messagebox.showerror("Erro", "Não foi possível criar o país.")
+                if not bandeira_path:
+                    messagebox.showerror("Erro", "Por favor, selecione uma bandeira.")
+                    return
+                
+                with open(bandeira_path, 'rb') as bandeira_file:
+                    data = {
+                        'nome': nome,
+                        'sigla': sigla
+                    }
+                    
+                    files = {
+                        'bandeira': bandeira_file
+                    }
+                    
+                    try:
+                        response = post(
+                            'http://127.0.0.1:5000/api/pais',
+                            data=data,
+                            files=files
+                        )
+                        if response.status_code == 201:
+                            messagebox.showinfo("Sucesso", f"País {nome} criado com sucesso!")
+                        else:
+                            messagebox.showerror("Erro", f"Erro ao criar país: {response.json().get('message', 'Erro desconhecido')}")
+                    except Exception as e:
+                        messagebox.showerror("Erro", f"Erro de conexão: {e}")
 
             if self.selected_table == "Confederação":
                 nome = self.nome_entry.get()
@@ -329,7 +367,7 @@ class App(ttk.Window):
                 response = post(url='http://127.0.0.1:5000/api/confederacao', json=data)
                 
                 if response.status_code == 201:
-                    messagebox.showinfo("Sucesso", response.json()["message"])
+                    messagebox.showinfo("Sucesso", f"Confederação {nome} criada com sucesso!")
                 else:
                     messagebox.showerror("Erro", "Não foi possível criar a confederação.")
 
@@ -351,32 +389,44 @@ class App(ttk.Window):
                 response = post(url='http://127.0.0.1:5000/api/atleta', json=data)
                 
                 if response.status_code == 201:
-                    messagebox.showinfo("Sucesso", response.json()["message"])
+                    messagebox.showinfo("Sucesso", f"Atleta {nome} criado com sucesso!")
                 else:
                     messagebox.showerror("Erro", "Não foi possível criar o atleta.")                
 
         elif action == "atualizar":
             if self.selected_table == "País":
-                id_pais = self.id_pais_entry.get()
+                id_pais = self.id_entry.get()
                 
                 nome = self.nome_entry.get()
                 sigla = self.sigla_entry.get()
-                bandeira = self.image_path_entry.get()
                 
-                data = {
-                    "nome": nome,
-                    "sigla": sigla,
-                    "bandeira": bandeira
-                }
+                bandeira_path = self.image_path_entry.get()
                 
-                response = put(url=f'http://127.0.0.1:5000/api/pais/{id_pais}', json=data)
+                if not bandeira_path:
+                    messagebox.showerror("Erro", "Por favor, selecione uma bandeira.")
+                    return
                 
-                if response.status_code == 200:
-                    messagebox.showinfo("Sucesso", response.json()["message"])
-                elif response.status_code == 404:
-                    messagebox.showerror("Erro", "País não encontrado.")
-                else:
-                    messagebox.showerror("Erro", "Não foi possível atualizar o país.")
+                with open(bandeira_path, 'rb') as bandeira_file:
+                    data = {
+                        'nome': nome,
+                        'sigla': sigla
+                    }
+                    
+                    files = {
+                        'bandeira': bandeira_file
+                    }
+                    try:
+                        response = put(
+                            url=f'http://127.0.0.1:5000/api/pais/{id_pais}', 
+                            data=data, 
+                            files=files
+                        )
+                        if response.status_code == 200:
+                            messagebox.showinfo("Sucesso", f"País {nome} atualizado com sucesso!")
+                        else:
+                            messagebox.showerror("Erro", f"Erro ao atualizar país: {response.json().get('message', 'Erro desconhecido')}")
+                    except Exception as e:
+                        messagebox.showerror("Erro", f"Erro de conexão: {e}")
 
             if self.selected_table == "Confederação":
                 id = self.id_entry.get()
@@ -391,7 +441,7 @@ class App(ttk.Window):
                 response = put(url=f'http://127.0.0.1:5000/api/confederacao/{id}', json=data)
                 
                 if response.status_code == 200:
-                    messagebox.showinfo("Sucesso", response.json()["message"])
+                    messagebox.showinfo("Sucesso", f"Confederação {nome} atualizada com sucesso!")
                 else:
                     messagebox.showerror("Erro", "Não foi possível atualizar a confederação.")
     
@@ -412,7 +462,7 @@ class App(ttk.Window):
                 response = put(url=f'http://127.0.0.1:5000/api/atleta/{id}', json=data)
                 
                 if response.status_code == 200:
-                    messagebox.showinfo("Sucesso", response.json()["message"])
+                    messagebox.showinfo("Sucesso", f"Atleta {nome} atualizada com sucesso!")
                 else:
                     messagebox.showerror("Erro", "Não foi possível atualizar o atleta.")
 
@@ -424,7 +474,7 @@ class App(ttk.Window):
                 response = delete(url=f'http://127.0.0.1:5000/api/pais/{id}')
                 
                 if response.status_code == 200:
-                    messagebox.showinfo("Sucesso", response.json()["message"])
+                    messagebox.showinfo("Sucesso", "País excluído com sucesso!")
                 else:
                     messagebox.showerror("Erro", "Não foi possível deletar o país.")
 
@@ -435,7 +485,7 @@ class App(ttk.Window):
                 response = delete(url=f'http://127.0.0.1:5000/api/confederacao/{id}')
                 
                 if response.status_code == 200:
-                    messagebox.showinfo("Sucesso", response.json()["message"])
+                    messagebox.showinfo("Sucesso", "Confederação excluída com sucesso!")
                 else:
                     messagebox.showerror("Erro", "Não foi possível deletar a confederação.")
 
@@ -445,7 +495,7 @@ class App(ttk.Window):
                 response = delete(url=f'http://127.0.0.1:5000/api/atleta/{id}')
                 
                 if response.status_code == 200:
-                    messagebox.showinfo("Sucesso", response.json()["message"])
+                    messagebox.showinfo("Sucesso", "Atleta excluído com sucesso!")
                 else:
                     messagebox.showerror("Erro", "Não foi possível deletar o atleta.")
 
