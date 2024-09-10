@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from sqlalchemy.orm import Session
 from models.atleta import Atleta
-from database import get_db
+from database.database import get_db
 
 atleta_bp = Blueprint('atleta', __name__)
 

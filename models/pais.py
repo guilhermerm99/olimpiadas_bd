@@ -8,7 +8,7 @@ class Pais(Base):
     id_pais = Column(Integer, primary_key=True)
     nome = Column(String, nullable=False, unique=True)
     sigla = Column(String, nullable=False)
-    bandeira = Column(LargeBinary, nullable=True)  # Alterado para LargeBinary
+    bandeira = Column(LargeBinary, nullable=True)
     
     # Relacionamento com Confederacao
     confederacoes = relationship("Confederacao", back_populates="pais")

@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from models.pais import Pais
 from models.confederacao import Confederacao
 from models.atleta import Atleta
-from database import get_db
+from database.database import get_db
 
 correlacionar_bp = Blueprint('correlacionar', __name__)
 

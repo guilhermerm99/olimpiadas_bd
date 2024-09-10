@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from sqlalchemy.orm import Session
 from models.confederacao import Confederacao
-from database import get_db
+from database.database import get_db
 
 conf_bp = Blueprint('confederacao', __name__)
 
