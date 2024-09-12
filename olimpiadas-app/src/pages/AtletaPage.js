@@ -1,7 +1,16 @@
 // src/pages/AtletasPage.js
 import React, { useState } from 'react';
 import {
-  Typography, Container, Button, TextField, Stack, Card, CardContent, CircularProgress, Snackbar, Alert
+  Typography,
+  Container,
+  Button,
+  TextField,
+  Stack,
+  Card,
+  CardContent,
+  CircularProgress,
+  Snackbar,
+  Alert,
 } from '@mui/material';
 import api from '../services/api'; // Utilizando o Axios configurado para a baseURL
 
@@ -35,7 +44,7 @@ function AtletasPage() {
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-    setAtletaData(prevData => ({ ...prevData, [name]: value }));
+    setAtletaData((prevData) => ({ ...prevData, [name]: value }));
   };
 
   const handleSubmit = async (event) => {
@@ -88,15 +97,11 @@ function AtletasPage() {
       {action === 'viewAll' && (
         <div>
           {atletas.length > 0 ? (
-            atletas.map(atleta => (
-              <Card key={atleta.id} sx={{ margin: 2 }}>
+            atletas.map((atleta) => (
+              <Card key={atleta.id_atleta} sx={{ margin: 2 }}>
                 <CardContent>
-                  <Typography variant="h6">
-                    Nome: {atleta.nome}
-                  </Typography>
-                  <Typography color="textSecondary">
-                    Gênero: {atleta.genero}
-                  </Typography>
+                  <Typography variant="h6">Nome: {atleta.nome}</Typography>
+                  <Typography color="textSecondary">Gênero: {atleta.genero}</Typography>
                   <Typography color="textSecondary">
                     Data de Nascimento: {new Date(atleta.data_nasc).toLocaleDateString()}
                   </Typography>
@@ -110,43 +115,8 @@ function AtletasPage() {
       )}
       {(action === 'add' || action === 'update' || action === 'delete') && (
         <form onSubmit={handleSubmit}>
-          <TextField
-            name="nome"
-            label="Nome"
-            value={atletaData.nome || ''}
-            onChange={handleInputChange}
-            required={action !== 'delete'}
-            fullWidth
-          />
-          <TextField
-            name="genero"
-            label="Gênero"
-            value={atletaData.genero || ''}
-            onChange={handleInputChange}
-            required={action !== 'delete'}
-            fullWidth
-          />
-          <TextField
-            name="data_nasc"
-            label="Data de Nascimento"
-            type="date"
-            value={atletaData.data_nasc || ''}
-            onChange={handleInputChange}
-            required={action !== 'delete'}
-            InputLabelProps={{ shrink: true }}
-            fullWidth
-          />
-          {action !== 'delete' && (
-            <TextField
-              name="id_confederacao"
-              label="ID da Confederação"
-              value={atletaData.id_confederacao || ''}
-              onChange={handleInputChange}
-              required
-              fullWidth
-            />
-          )}
-          {action === 'update' && (
+          {action === 'delete' ? (
+            // Formulário para deletar
             <TextField
               name="id_atleta"
               label="ID do Atleta"
@@ -155,14 +125,77 @@ function AtletasPage() {
               required
               fullWidth
             />
+          ) : (
+            // Formulário para adicionar e atualizar
+            <>
+              <TextField
+                name="nome"
+                label="Nome"
+                value={atletaData.nome || ''}
+                onChange={handleInputChange}
+                required={action !== 'delete'}
+                fullWidth
+              />
+              <TextField
+                name="genero"
+                label="Gênero"
+                value={atletaData.genero || ''}
+                onChange={handleInputChange}
+                required={action !== 'delete'}
+                fullWidth
+              />
+              <TextField
+                name="data_nasc"
+                label="Data de Nascimento"
+                type="date"
+                value={atletaData.data_nasc || ''}
+                onChange={handleInputChange}
+                required={action !== 'delete'}
+                InputLabelProps={{ shrink: true }}
+                fullWidth
+              />
+              <TextField
+                name="id_confederacao"
+                label="ID da Confederação"
+                value={atletaData.id_confederacao || ''}
+                onChange={handleInputChange}
+                required
+                fullWidth
+              />
+              <TextField
+                name="id_modalidade"
+                label="ID da Modalidade"
+                value={atletaData.id_modalidade || ''}
+                onChange={handleInputChange}
+                required
+                fullWidth
+              />
+              {action === 'update' && (
+                <TextField
+                  name="id_atleta"
+                  label="ID do Atleta"
+                  value={atletaData.id_atleta || ''}
+                  onChange={handleInputChange}
+                  required
+                  fullWidth
+                />
+              )}
+            </>
           )}
           <Button type="submit" variant="contained" color="primary">
             {action === 'add' ? 'Adicionar' : action === 'update' ? 'Atualizar' : 'Excluir'}
           </Button>
         </form>
       )}
-      <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={() => setOpenSnackbar(false)}>
-        <Alert onClose={() => setOpenSnackbar(false)} severity={message.includes('Erro') ? 'error' : 'success'}>
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={() => setOpenSnackbar(false)}
+      >
+        <Alert
+          onClose={() => setOpenSnackbar(false)}
+          severity={message.includes('Erro') ? 'error' : 'success'}
+        >
           {message}
         </Alert>
       </Snackbar>
