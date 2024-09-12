@@ -102,13 +102,6 @@ Este projeto é uma aplicação de gerenciamento de dados de Olimpíadas, inclui
    http://localhost:3000
    ```
 
-## Testes
-
-Para rodar os testes do back-end, utilize:
-
-```bash
-python -m unittest discover -s tests
-```
 
 ## Estrutura de Diretórios
 
