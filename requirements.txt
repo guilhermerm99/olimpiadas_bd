@@ -1,0 +1,9 @@
+sqlalchemy
+mysql-connector-python
+flask
+ttkbootstrap
+requests
+pandas
+mysql-connector-python
+Flask-Cors
+npm
