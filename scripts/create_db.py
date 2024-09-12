@@ -152,11 +152,9 @@ def create_database():
                 id_equipe INT,
                 id_atleta INT,
                 id_evento INT,
-                id_edicao YEAR,
-                PRIMARY KEY (id_equipe, id_atleta, id_evento, id_edicao),
+                PRIMARY KEY (id_equipe, id_atleta, id_evento),
                 FOREIGN KEY (id_atleta) REFERENCES Atleta(id_atleta),
-                FOREIGN KEY (id_evento) REFERENCES Evento(id_evento),
-                FOREIGN KEY (id_edicao) REFERENCES Edicao(ano)
+                FOREIGN KEY (id_evento) REFERENCES Evento(id_evento)
             );
             """
 

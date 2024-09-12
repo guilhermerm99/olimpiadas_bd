@@ -159,12 +159,12 @@ def insert_data():
         execute_query(connection, historico_sql)
         
         atletas_participantes_sql = """
-        INSERT IGNORE INTO Atletas_Participantes (id_equipe, id_atleta, id_evento, id_edicao) VALUES
-        (1, 1, 1, 2016),
-        (1, 2, 2, 2012),
-        (1, 3, 3, 2020),
-        (1, 4, 4, 2016),
-        (1, 5, 5, 2020);
+        INSERT IGNORE INTO Atletas_Participantes (id_equipe, id_atleta, id_evento) VALUES
+        (1, 1, 1),
+        (2, 2, 2),
+        (3, 3, 3),
+        (4, 4, 4),
+        (5, 5, 5);
         """
         execute_query(connection, atletas_participantes_sql)
 
