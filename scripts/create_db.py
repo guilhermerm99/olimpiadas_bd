@@ -1,12 +1,19 @@
 import mysql.connector
 from mysql.connector import Error
+import os
 
 def get_db_connection():
     try:
+        # Obtendo as credenciais do banco de dados de variáveis de ambiente
+        host = os.getenv("DB_HOST", "localhost")      # Padrão 'localhost' se não definido
+        user = os.getenv("DB_USER", "root")           # Padrão 'root' se não definido
+        password = os.getenv("DB_PASSWORD")           # Senha deve ser definida na variável de ambiente
+
+        # Estabelecendo conexão com o MySQL
         connection = mysql.connector.connect(
-            host='localhost',
-            user='root',          # Substitua pelo seu usuário do MySQL
-            password='grdm9977',  # Substitua pela sua senha do MySQL
+            host=host,
+            user=user,
+            password=password,
         )
         if connection.is_connected():
             print("Conexão ao MySQL estabelecida com sucesso")
@@ -14,6 +21,7 @@ def get_db_connection():
     except Error as e:
         print(f"Erro ao conectar ao MySQL: {e}")
         return None
+
 
 def create_database():
     connection = get_db_connection()
@@ -63,7 +71,7 @@ def create_database():
                 ano YEAR PRIMARY KEY,
                 cidade_sede VARCHAR(100) NOT NULL,
                 id_pais INT,
-                FOREIGN KEY (id_pais) REFERENCES Pais(id_pais) ON DELETE SET NULL
+                FOREIGN KEY (id_pais) REFERENCES Pais(id_pais) ON DELETE CASCADE
             );
 
             -- Criação da tabela Modalidade
