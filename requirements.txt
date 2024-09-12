@@ -7,4 +7,3 @@ pandas
 mysql-connector-python
 Flask-Cors
 npm
-python-dotenv
